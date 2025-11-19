@@ -33,10 +33,6 @@ Import database library.sql (available inside zip package)
 For User
 Open Your browser put inside browser “http://localhost/library”
 
-Login Details for user :
-
-Username : test@gmail.com
-Password : Test@123
 
 
 For Admin Panel
