@@ -95,14 +95,16 @@ else{
                                             <th>#</th>
                                             <th>Student Name</th>
                                             <th>Book Name</th>
-                                            <th>ISBN </th>
+                                            <th>Book Code</th>
                                             <th>Issued Date</th>
+                                            <th>Scheduled Return</th>
                                             <th>Return Date</th>
+                                            <th>Days Overdue</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-<?php $sql = "SELECT tblstudents.FullName,tblbooks.BookName,tblbooks.ISBNNumber,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId order by tblissuedbookdetails.id desc";
+<?php $sql = "SELECT tblstudents.FullName,tblbooks.BookName,tblbooks.BookCode,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ScheduledReturnDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId order by tblissuedbookdetails.id desc";
 $query = $dbh -> prepare($sql);
 $query->execute();
 $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -115,17 +117,41 @@ foreach($results as $result)
                                             <td class="center"><?php echo htmlentities($cnt);?></td>
                                             <td class="center"><?php echo htmlentities($result->FullName);?></td>
                                             <td class="center"><?php echo htmlentities($result->BookName);?></td>
-                                            <td class="center"><?php echo htmlentities($result->ISBNNumber);?></td>
+                                            <td class="center"><?php echo htmlentities($result->BookCode);?></td>
                                             <td class="center"><?php echo htmlentities($result->IssuesDate);?></td>
+                                            <td class="center"><?php echo htmlentities($result->ScheduledReturnDate ? $result->ScheduledReturnDate : 'N/A');?></td>
                                             <td class="center"><?php if($result->ReturnDate=="")
                                             {
-                                                echo htmlentities("Not Return Yet");
+                                                echo htmlentities("Not Returned Yet");
                                             } else {
-
-
                                             echo htmlentities($result->ReturnDate);
 }
                                             ?></td>
+                                            <td class="center">
+                                            <?php 
+                                            if($result->ReturnDate=="") {
+                                                // Book not returned yet, calculate days overdue
+                                                $today = new DateTime();
+                                                $scheduledReturn = new DateTime($result->ScheduledReturnDate);
+                                                if($today > $scheduledReturn) {
+                                                    $interval = $today->diff($scheduledReturn);
+                                                    echo '<span style="color:red; font-weight:bold;">' . $interval->days . ' days overdue</span>';
+                                                } else {
+                                                    echo '<span style="color:green;">On time</span>';
+                                                }
+                                            } else {
+                                                // Book returned, calculate if it was late
+                                                $returnDate = new DateTime($result->ReturnDate);
+                                                $scheduledReturn = new DateTime($result->ScheduledReturnDate);
+                                                if($returnDate > $scheduledReturn) {
+                                                    $interval = $returnDate->diff($scheduledReturn);
+                                                    echo '<span style="color:orange;">Returned ' . $interval->days . ' days late</span>';
+                                                } else {
+                                                    echo '<span style="color:green;">Returned on time</span>';
+                                                }
+                                            }
+                                            ?>
+                                            </td>
                                             <td class="center">
 
                                             <a href="update-issue-bookdeails.php?rid=<?php echo htmlentities($result->rid);?>"><button class="btn btn-primary"><i class="fa fa-edit "></i> Edit</button> 

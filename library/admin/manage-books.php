@@ -14,7 +14,7 @@ $sql = "delete from tblbooks  WHERE id=:id";
 $query = $dbh->prepare($sql);
 $query -> bindParam(':id',$id, PDO::PARAM_STR);
 $query -> execute();
-$_SESSION['delmsg']="Category deleted scuccessfully ";
+$_SESSION['delmsg']="Book deleted successfully ";
 header('location:manage-books.php');
 
 }
@@ -115,13 +115,13 @@ header('location:manage-books.php');
                                             <th>Book Name</th>
                                             <th>Category</th>
                                             <th>Author</th>
-                                            <th>ISBN</th>
-                                            <th>Price</th>
+                                            <th>Book Code</th>
+                                            <th>Price (₹)</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-<?php $sql = "SELECT tblbooks.BookName,tblcategory.CategoryName,tblauthors.AuthorName,tblbooks.ISBNNumber,tblbooks.BookPrice,tblbooks.id as bookid from  tblbooks join tblcategory on tblcategory.id=tblbooks.CatId join tblauthors on tblauthors.id=tblbooks.AuthorId";
+<?php $sql = "SELECT tblbooks.BookName,tblcategory.CategoryName,tblauthors.AuthorName,tblbooks.BookCode,tblbooks.BookPrice,tblbooks.id as bookid from  tblbooks join tblcategory on tblcategory.id=tblbooks.CatId join tblauthors on tblauthors.id=tblbooks.AuthorId";
 $query = $dbh -> prepare($sql);
 $query->execute();
 $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -135,8 +135,8 @@ foreach($results as $result)
                                             <td class="center"><?php echo htmlentities($result->BookName);?></td>
                                             <td class="center"><?php echo htmlentities($result->CategoryName);?></td>
                                             <td class="center"><?php echo htmlentities($result->AuthorName);?></td>
-                                            <td class="center"><?php echo htmlentities($result->ISBNNumber);?></td>
-                                            <td class="center"><?php echo htmlentities($result->BookPrice);?></td>
+                                            <td class="center"><?php echo htmlentities($result->BookCode);?></td>
+                                            <td class="center">₹<?php echo htmlentities($result->BookPrice);?></td>
                                             <td class="center">
 
                                             <a href="edit-book.php?bookid=<?php echo htmlentities($result->bookid);?>"><button class="btn btn-primary"><i class="fa fa-edit "></i> Edit</button> 

@@ -57,7 +57,7 @@ header('location:manage-authors.php');
 
 </div>
 <div class="row">
-<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3"">
+<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
 <div class="panel panel-info">
 <div class="panel-heading">
 Author Info

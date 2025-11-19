@@ -4,42 +4,41 @@ include('includes/config.php');
 error_reporting(0);
 if(isset($_POST['signup']))
 {
-//code for captach verification
-if ($_POST["vercode"] != $_SESSION["vercode"] OR $_SESSION["vercode"]=='')  {
-        echo "<script>alert('Incorrect verification code');</script>" ;
-    } 
-        else {    
-//Code for student ID
-$count_my_page = ("studentid.txt");
-$hits = file($count_my_page);
-$hits[0] ++;
-$fp = fopen($count_my_page , "w");
-fputs($fp , "$hits[0]");
-fclose($fp); 
-$StudentId= $hits[0];   
-$fname=$_POST['fullanme'];
+// Get SAP ID from form input
+$StudentId=$_POST['sapid'];
+$fname=$_POST['fullname'];
 $mobileno=$_POST['mobileno'];
 $email=$_POST['email']; 
 $password=md5($_POST['password']); 
 $status=1;
-$sql="INSERT INTO  tblstudents(StudentId,FullName,MobileNumber,EmailId,Password,Status) VALUES(:StudentId,:fname,:mobileno,:email,:password,:status)";
-$query = $dbh->prepare($sql);
-$query->bindParam(':StudentId',$StudentId,PDO::PARAM_STR);
-$query->bindParam(':fname',$fname,PDO::PARAM_STR);
-$query->bindParam(':mobileno',$mobileno,PDO::PARAM_STR);
-$query->bindParam(':email',$email,PDO::PARAM_STR);
-$query->bindParam(':password',$password,PDO::PARAM_STR);
-$query->bindParam(':status',$status,PDO::PARAM_STR);
-$query->execute();
-$lastInsertId = $dbh->lastInsertId();
-if($lastInsertId)
-{
-echo '<script>alert("Your Registration successfull and your student id is  "+"'.$StudentId.'")</script>';
-}
-else 
-{
-echo "<script>alert('Something went wrong. Please try again');</script>";
-}
+
+// Check if SAP ID already exists
+$sqlcheck="SELECT StudentId FROM tblstudents WHERE StudentId=:StudentId";
+$querycheck = $dbh->prepare($sqlcheck);
+$querycheck->bindParam(':StudentId',$StudentId,PDO::PARAM_STR);
+$querycheck->execute();
+
+if($querycheck->rowCount() > 0) {
+    echo "<script>alert('This SAP ID is already registered. Please use a different SAP ID.');</script>";
+} else {
+    $sql="INSERT INTO  tblstudents(StudentId,FullName,MobileNumber,EmailId,Password,Status) VALUES(:StudentId,:fname,:mobileno,:email,:password,:status)";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':StudentId',$StudentId,PDO::PARAM_STR);
+    $query->bindParam(':fname',$fname,PDO::PARAM_STR);
+    $query->bindParam(':mobileno',$mobileno,PDO::PARAM_STR);
+    $query->bindParam(':email',$email,PDO::PARAM_STR);
+    $query->bindParam(':password',$password,PDO::PARAM_STR);
+    $query->bindParam(':status',$status,PDO::PARAM_STR);
+    $query->execute();
+    $lastInsertId = $dbh->lastInsertId();
+    if($lastInsertId)
+    {
+    echo '<script>alert("Registration successful! Your SAP ID is: '.$StudentId.'")</script>';
+    }
+    else 
+    {
+    echo "<script>alert('Something went wrong. Please try again');</script>";
+    }
 }
 }
 ?>
@@ -114,9 +113,16 @@ error:function (){}
                         </div>
                         <div class="panel-body">
                             <form name="signup" method="post" onSubmit="return valid();">
+
+<div class="form-group">
+<label>SAP ID (9-digit Student ID) <span style="color:red;">*</span></label>
+<input class="form-control" type="text" name="sapid" pattern="[0-9]{9}" maxlength="9" placeholder="Enter your 9-digit SAP ID" autocomplete="off" required />
+<small class="form-text text-muted">Please enter your 9-digit SAP ID number</small>
+</div>
+
 <div class="form-group">
 <label>Enter Full Name</label>
-<input class="form-control" type="text" name="fullanme" autocomplete="off" required />
+<input class="form-control" type="text" name="fullname" autocomplete="off" required />
 </div>
 
 
@@ -140,10 +146,7 @@ error:function (){}
 <label>Confirm Password </label>
 <input class="form-control"  type="password" name="confirmpassword" autocomplete="off" required  />
 </div>
- <div class="form-group">
-<label>Verification code : </label>
-<input type="text"  name="vercode" maxlength="5" autocomplete="off" required style="width: 150px; height: 25px;" />&nbsp;<img src="captcha.php">
-</div>                                
+                                
 <button type="submit" name="signup" class="btn btn-danger" id="submit">Register Now </button>
 
                                     </form>

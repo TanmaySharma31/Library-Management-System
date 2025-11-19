@@ -3,7 +3,7 @@ require_once("includes/config.php");
 if(!empty($_POST["bookid"])) {
   $bookid=$_POST["bookid"];
  
-    $sql ="SELECT BookName,id FROM tblbooks WHERE (ISBNNumber=:bookid)";
+    $sql ="SELECT BookName,id FROM tblbooks WHERE (id=:bookid)";
 $query= $dbh -> prepare($sql);
 $query-> bindParam(':bookid', $bookid, PDO::PARAM_STR);
 $query-> execute();
@@ -21,7 +21,7 @@ echo htmlentities($result->BookName);
 }
  else{?>
   
-<option class="others"> Invalid ISBN Number</option>
+<option class="others"> Invalid Book ID</option>
 <?php
  echo "<script>$('#submit').prop('disabled',true);</script>";
 }

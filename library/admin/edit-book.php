@@ -13,15 +13,15 @@ if(isset($_POST['update']))
 $bookname=$_POST['bookname'];
 $category=$_POST['category'];
 $author=$_POST['author'];
-$isbn=$_POST['isbn'];
+$bookcode=$_POST['bookcode'];
 $price=$_POST['price'];
 $bookid=intval($_GET['bookid']);
-$sql="update  tblbooks set BookName=:bookname,CatId=:category,AuthorId=:author,ISBNNumber=:isbn,BookPrice=:price where id=:bookid";
+$sql="update  tblbooks set BookName=:bookname,CatId=:category,AuthorId=:author,BookCode=:bookcode,BookPrice=:price where id=:bookid";
 $query = $dbh->prepare($sql);
 $query->bindParam(':bookname',$bookname,PDO::PARAM_STR);
 $query->bindParam(':category',$category,PDO::PARAM_STR);
 $query->bindParam(':author',$author,PDO::PARAM_STR);
-$query->bindParam(':isbn',$isbn,PDO::PARAM_STR);
+$query->bindParam(':bookcode',$bookcode,PDO::PARAM_STR);
 $query->bindParam(':price',$price,PDO::PARAM_STR);
 $query->bindParam(':bookid',$bookid,PDO::PARAM_STR);
 $query->execute();
@@ -64,7 +64,7 @@ header('location:manage-books.php');
 
 </div>
 <div class="row">
-<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3"">
+<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
 <div class="panel panel-info">
 <div class="panel-heading">
 Book Info
@@ -73,7 +73,7 @@ Book Info
 <form role="form" method="post">
 <?php 
 $bookid=intval($_GET['bookid']);
-$sql = "SELECT tblbooks.BookName,tblcategory.CategoryName,tblcategory.id as cid,tblauthors.AuthorName,tblauthors.id as athrid,tblbooks.ISBNNumber,tblbooks.BookPrice,tblbooks.id as bookid from  tblbooks join tblcategory on tblcategory.id=tblbooks.CatId join tblauthors on tblauthors.id=tblbooks.AuthorId where tblbooks.id=:bookid";
+$sql = "SELECT tblbooks.BookName,tblcategory.CategoryName,tblcategory.id as cid,tblauthors.AuthorName,tblauthors.id as athrid,tblbooks.BookCode,tblbooks.BookPrice,tblbooks.id as bookid from  tblbooks join tblcategory on tblcategory.id=tblbooks.CatId join tblauthors on tblauthors.id=tblbooks.AuthorId where tblbooks.id=:bookid";
 $query = $dbh -> prepare($sql);
 $query->bindParam(':bookid',$bookid,PDO::PARAM_STR);
 $query->execute();
@@ -143,14 +143,14 @@ continue;
 </div>
 
 <div class="form-group">
-<label>ISBN Number<span style="color:red;">*</span></label>
-<input class="form-control" type="text" name="isbn" value="<?php echo htmlentities($result->ISBNNumber);?>"  required="required" />
-<p class="help-block">An ISBN is an International Standard Book Number.ISBN Must be unique</p>
+<label>Book Code<span style="color:red;">*</span></label>
+<input class="form-control" type="text" name="bookcode" value="<?php echo htmlentities($result->BookCode);?>"  required="required" />
+<p class="help-block">Book Code format: Category-SerialNumber (e.g., 1-001). Must be unique</p>
 </div>
 
- <div class="form-group">
- <label>Price in USD<span style="color:red;">*</span></label>
- <input class="form-control" type="text" name="price" value="<?php echo htmlentities($result->BookPrice);?>"   required="required" />
+<div class="form-group">
+<label>Price (in Rupees ₹)<span style="color:red;">*</span></label>
+<input class="form-control" type="text" name="price" value="<?php echo htmlentities($result->BookPrice);?>"  required /></div>
  </div>
  <?php }} ?>
 <button type="submit" name="update" class="btn btn-info">Update </button>

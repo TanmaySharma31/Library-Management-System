@@ -16,6 +16,7 @@
 {
 ?> 
             <div class="right-div">
+                <?php include('includes/notifications.php'); ?>
                 <a href="logout.php" class="btn btn-danger pull-right">LOG ME OUT</a>
             </div>
             <?php }?>
@@ -32,6 +33,7 @@
                     <div class="navbar-collapse collapse ">
                         <ul id="menu-top" class="nav navbar-nav navbar-right">
                             <li><a href="dashboard.php" class="menu-top-active">DASHBOARD</a></li>
+                            <li><a href="browse-books.php"><i class="fa fa-book"></i> Browse Books</a></li>
                            
                           
    <li>
@@ -42,6 +44,7 @@
                                 </ul>
                             </li>
                             <li><a href="issued-books.php">Issued Books</a></li>
+                            <li><a href="book-reservation.php"><i class="fa fa-bookmark"></i> My Reservations</a></li>
                           
 
                         </ul>

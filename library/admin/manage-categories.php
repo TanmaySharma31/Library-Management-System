@@ -10,11 +10,11 @@ else{
 if(isset($_GET['del']))
 {
 $id=$_GET['del'];
-$sql = "delete from tblcategory  WHERE id=:id";
+$sql = "delete from  tblcategory  WHERE id=:id";
 $query = $dbh->prepare($sql);
 $query -> bindParam(':id',$id, PDO::PARAM_STR);
 $query -> execute();
-$_SESSION['delmsg']="Category deleted scuccessfully ";
+$_SESSION['delmsg']="Category deleted successfully ";
 header('location:manage-categories.php');
 
 }

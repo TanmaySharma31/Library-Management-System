@@ -14,7 +14,7 @@ $sql = "delete from tblbooks  WHERE id=:id";
 $query = $dbh->prepare($sql);
 $query -> bindParam(':id',$id, PDO::PARAM_STR);
 $query -> execute();
-$_SESSION['delmsg']="Category deleted scuccessfully ";
+$_SESSION['delmsg']="Category deleted successfully ";
 header('location:manage-books.php');
 
 }
@@ -67,16 +67,18 @@ header('location:manage-books.php');
                                         <tr>
                                             <th>#</th>
                                             <th>Book Name</th>
-                                            <th>ISBN </th>
+                                            <th>Book Code</th>
                                             <th>Issued Date</th>
+                                            <th>Scheduled Return</th>
                                             <th>Return Date</th>
-                                            <th>Fine in(USD)</th>
+                                            <th>Days Overdue</th>
+                                            <th>Fine (₹)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
 <?php 
 $sid=$_SESSION['stdid'];
-$sql="SELECT tblbooks.BookName,tblbooks.ISBNNumber,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid,tblissuedbookdetails.fine from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId where tblstudents.StudentId=:sid order by tblissuedbookdetails.id desc";
+$sql="SELECT tblbooks.BookName,tblbooks.BookCode,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ScheduledReturnDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid,tblissuedbookdetails.fine from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId where tblstudents.StudentId=:sid order by tblissuedbookdetails.id desc";
 $query = $dbh -> prepare($sql);
 $query-> bindParam(':sid', $sid, PDO::PARAM_STR);
 $query->execute();
@@ -89,18 +91,45 @@ foreach($results as $result)
                                         <tr class="odd gradeX">
                                             <td class="center"><?php echo htmlentities($cnt);?></td>
                                             <td class="center"><?php echo htmlentities($result->BookName);?></td>
-                                            <td class="center"><?php echo htmlentities($result->ISBNNumber);?></td>
+                                            <td class="center"><?php echo htmlentities($result->BookCode);?></td>
                                             <td class="center"><?php echo htmlentities($result->IssuesDate);?></td>
+                                            <td class="center"><?php echo htmlentities($result->ScheduledReturnDate ? $result->ScheduledReturnDate : 'N/A');?></td>
                                             <td class="center"><?php if($result->ReturnDate=="")
                                             {?>
                                             <span style="color:red">
-                                             <?php   echo htmlentities("Not Return Yet"); ?>
+                                             <?php   echo htmlentities("Not Returned Yet"); ?>
                                                 </span>
                                             <?php } else {
                                             echo htmlentities($result->ReturnDate);
                                         }
                                             ?></td>
-                                              <td class="center"><?php echo htmlentities($result->fine);?></td>
+                                            <td class="center">
+                                            <?php 
+                                            if($result->ReturnDate=="") {
+                                                // Book not returned yet, calculate days overdue
+                                                $today = new DateTime();
+                                                $scheduledReturn = new DateTime($result->ScheduledReturnDate);
+                                                if($today > $scheduledReturn) {
+                                                    $interval = $today->diff($scheduledReturn);
+                                                    echo '<span style="color:red; font-weight:bold;">' . $interval->days . ' days</span>';
+                                                } else {
+                                                    $daysLeft = $scheduledReturn->diff($today)->days;
+                                                    echo '<span style="color:green;">' . $daysLeft . ' days left</span>';
+                                                }
+                                            } else {
+                                                // Book returned, calculate if it was late
+                                                $returnDate = new DateTime($result->ReturnDate);
+                                                $scheduledReturn = new DateTime($result->ScheduledReturnDate);
+                                                if($returnDate > $scheduledReturn) {
+                                                    $interval = $returnDate->diff($scheduledReturn);
+                                                    echo '<span style="color:orange;">' . $interval->days . ' days late</span>';
+                                                } else {
+                                                    echo '<span style="color:green;">On time</span>';
+                                                }
+                                            }
+                                            ?>
+                                            </td>
+                                              <td class="center">₹<?php echo htmlentities($result->fine ? $result->fine : '0.00');?></td>
                                          
                                         </tr>
  <?php $cnt=$cnt+1;}} ?>                                      

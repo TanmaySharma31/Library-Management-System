@@ -11,11 +11,18 @@ else{
 if(isset($_POST['issue']))
 {
 $studentid=strtoupper($_POST['studentid']);
-$bookid=$_POST['bookdetails'];
-$sql="INSERT INTO  tblissuedbookdetails(StudentID,BookId) VALUES(:studentid,:bookid)";
+$bookid=$_POST['bookid'];
+
+// Calculate scheduled return date (20 days from today)
+$issueDate = date('Y-m-d');
+$scheduledReturnDate = date('Y-m-d', strtotime($issueDate . ' + 20 days'));
+
+$sql="INSERT INTO tblissuedbookdetails(StudentID,BookId,IssuesDate,ScheduledReturnDate) VALUES(:studentid,:bookid,:issuedate,:scheduledreturndate)";
 $query = $dbh->prepare($sql);
 $query->bindParam(':studentid',$studentid,PDO::PARAM_STR);
 $query->bindParam(':bookid',$bookid,PDO::PARAM_STR);
+$query->bindParam(':issuedate',$issueDate,PDO::PARAM_STR);
+$query->bindParam(':scheduledreturndate',$scheduledReturnDate,PDO::PARAM_STR);
 $query->execute();
 $lastInsertId = $dbh->lastInsertId();
 if($lastInsertId)
@@ -47,6 +54,8 @@ header('location:manage-issued-books.php');
     <link href="assets/css/style.css" rel="stylesheet" />
     <!-- GOOGLE FONT -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+    <!-- jQuery UI for Autocomplete -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script>
 // function for get student name
 function getstudent() {
@@ -78,6 +87,38 @@ error:function (){}
 });
 }
 
+// Autocomplete for book search by ID
+$(document).ready(function() {
+    $("#bookid").autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: "search_books_by_id.php",
+                dataType: "json",
+                data: {
+                    term: request.term
+                },
+                success: function(data) {
+                    response(data);
+                }
+            });
+        },
+        minLength: 1,
+        select: function(event, ui) {
+            $("#bookid").val(ui.item.id);
+            $("#get_book_name").html('<div class="alert alert-success"><b>Selected Book:</b> ' + ui.item.bookname + ' (ID: ' + ui.item.id + ')<br><b>Book Code:</b> ' + ui.item.bookcode + '<br><b>Author:</b> ' + ui.item.author + '</div>');
+            $("#submit").prop('disabled', false);
+            return false;
+        }
+    });
+    
+    // Also trigger search on blur
+    $("#bookid").on('blur', function() {
+        if($(this).val() != '') {
+            getbook();
+        }
+    });
+});
+
 </script> 
 <style type="text/css">
   .others{
@@ -92,56 +133,49 @@ error:function (){}
       <!------MENU SECTION START-->
 <?php include('includes/header.php');?>
 <!-- MENU SECTION END-->
-    <div class="content-wra
     <div class="content-wrapper">
          <div class="container">
         <div class="row pad-botm">
             <div class="col-md-12">
                 <h4 class="header-line">Issue a New Book</h4>
-                
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-10 col-sm-12 col-xs-12 col-md-offset-1">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        Issue a New Book
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" method="post">
+
+                            <div class="form-group">
+                                <label>Student ID<span style="color:red;">*</span></label>
+                                <input class="form-control" type="text" name="studentid" id="studentid" onBlur="getstudent()" autocomplete="off"  required />
                             </div>
 
-</div>
-<div class="row">
-<div class="col-md-10 col-sm-6 col-xs-12 col-md-offset-1"">
-<div class="panel panel-info">
-<div class="panel-heading">
-Issue a New Book
-</div>
-<div class="panel-body">
-<form role="form" method="post">
-
-<div class="form-group">
-<label>Srtudent id<span style="color:red;">*</span></label>
-<input class="form-control" type="text" name="studentid" id="studentid" onBlur="getstudent()" autocomplete="off"  required />
-</div>
-
-<div class="form-group">
-<span id="get_student_name" style="font-size:16px;"></span> 
-</div>
-
-
-
-
-
-<div class="form-group">
-<label>ISBN Number or Book Title<span style="color:red;">*</span></label>
-<input class="form-control" type="text" name="booikid" id="bookid" onBlur="getbook()"  required="required" />
-</div>
-
- <div class="form-group">
-
-  <select  class="form-control" name="bookdetails" id="get_book_name" readonly>
-   
- </select>
- </div>
-<button type="submit" name="issue" id="submit" class="btn btn-info">Issue Book </button>
-
-                                    </form>
-                            </div>
-                        </div>
+                            <div class="form-group">
+                                <span id="get_student_name" style="font-size:16px;"></span> 
                             </div>
 
+                            <div class="form-group">
+                                <label>Book ID<span style="color:red;">*</span></label>
+                                <input class="form-control" type="text" name="bookid" id="bookid" onBlur="getbook()" autocomplete="off" placeholder="Start typing Book ID or title..." required="required" />
+                                <small class="form-text text-muted">Enter Book ID (e.g., 1001, 2001) or start typing book title</small>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="hidden" name="bookdetails" id="bookdetails_hidden" />
+                                <div id="get_book_name" style="font-size:16px;"></div>
+                            </div>
+                            
+                            <button type="submit" name="issue" id="submit" class="btn btn-info">Issue Book</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
    
     </div>
@@ -152,6 +186,8 @@ Issue a New Book
     <!-- JAVASCRIPT FILES PLACED AT THE BOTTOM TO REDUCE THE LOADING TIME  -->
     <!-- CORE JQUERY  -->
     <script src="assets/js/jquery-1.10.2.js"></script>
+    <!-- jQuery UI for Autocomplete -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- BOOTSTRAP SCRIPTS  -->
     <script src="assets/js/bootstrap.js"></script>
       <!-- CUSTOM SCRIPTS  -->

@@ -22,9 +22,21 @@ $query->execute();
 
 $_SESSION['msg']="Book Returned successfully";
 header('location:manage-issued-books.php');
+}
 
+// Update Scheduled Return Date
+if(isset($_POST['update_schedule']))
+{
+$rid=intval($_GET['rid']);
+$scheduledReturnDate=$_POST['scheduled_return_date'];
+$sql="update tblissuedbookdetails set ScheduledReturnDate=:scheduledReturnDate where id=:rid";
+$query = $dbh->prepare($sql);
+$query->bindParam(':rid',$rid,PDO::PARAM_STR);
+$query->bindParam(':scheduledReturnDate',$scheduledReturnDate,PDO::PARAM_STR);
+$query->execute();
 
-
+$_SESSION['msg']="Scheduled return date updated successfully";
+header('location:manage-issued-books.php');
 }
 ?>
 <!DOCTYPE html>
@@ -108,7 +120,7 @@ Issued Book Details
 <form role="form" method="post">
 <?php 
 $rid=intval($_GET['rid']);
-$sql = "SELECT tblstudents.FullName,tblbooks.BookName,tblbooks.ISBNNumber,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid,tblissuedbookdetails.fine,tblissuedbookdetails.RetrunStatus from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId where tblissuedbookdetails.id=:rid";
+$sql = "SELECT tblstudents.FullName,tblbooks.BookName,tblbooks.BookCode,tblissuedbookdetails.IssuesDate,tblissuedbookdetails.ScheduledReturnDate,tblissuedbookdetails.ReturnDate,tblissuedbookdetails.id as rid,tblissuedbookdetails.fine,tblissuedbookdetails.RetrunStatus from  tblissuedbookdetails join tblstudents on tblstudents.StudentId=tblissuedbookdetails.StudentId join tblbooks on tblbooks.id=tblissuedbookdetails.BookId where tblissuedbookdetails.id=:rid";
 $query = $dbh -> prepare($sql);
 $query->bindParam(':rid',$rid,PDO::PARAM_STR);
 $query->execute();
@@ -134,13 +146,23 @@ foreach($results as $result)
 
 
 <div class="form-group">
-<label>ISBN :</label>
-<?php echo htmlentities($result->ISBNNumber);?>
+<label>Book Code :</label>
+<?php echo htmlentities($result->BookCode);?>
 </div>
 
 <div class="form-group">
 <label>Book Issued Date :</label>
 <?php echo htmlentities($result->IssuesDate);?>
+</div>
+
+<div class="form-group">
+<label>Scheduled Return Date :</label>
+<?php if($result->RetrunStatus==0){?>
+<input class="form-control" type="date" name="scheduled_return_date" value="<?php echo htmlentities($result->ScheduledReturnDate);?>" required />
+<small class="help-block">You can modify the scheduled return date</small>
+<?php } else {
+    echo htmlentities($result->ScheduledReturnDate);
+}?>
 </div>
 
 
@@ -158,19 +180,20 @@ foreach($results as $result)
 </div>
 
 <div class="form-group">
-<label>Fine (in USD) :</label>
+<label>Fine (in Rupees ₹) :</label>
 <?php 
 if($result->fine=="")
 {?>
 <input class="form-control" type="text" name="fine" id="fine"  required />
 
 <?php }else {
-echo htmlentities($result->fine);
+echo "₹" . htmlentities($result->fine);
 }
 ?>
 </div>
  <?php if($result->RetrunStatus==0){?>
 
+<button type="submit" name="update_schedule" class="btn btn-primary">Update Schedule</button>
 <button type="submit" name="return" id="submit" class="btn btn-info">Return Book </button>
 
  </div>

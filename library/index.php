@@ -7,16 +7,11 @@ $_SESSION['login']='';
 }
 if(isset($_POST['login']))
 {
-  //code for captach verification
-if ($_POST["vercode"] != $_SESSION["vercode"] OR $_SESSION["vercode"]=='')  {
-        echo "<script>alert('Incorrect verification code');</script>" ;
-    } 
-        else {
-$email=$_POST['emailid'];
+$studentid=$_POST['studentid'];
 $password=md5($_POST['password']);
-$sql ="SELECT EmailId,Password,StudentId,Status FROM tblstudents WHERE EmailId=:email and Password=:password";
+$sql ="SELECT EmailId,Password,StudentId,Status FROM tblstudents WHERE StudentId=:studentid and Password=:password";
 $query= $dbh -> prepare($sql);
-$query-> bindParam(':email', $email, PDO::PARAM_STR);
+$query-> bindParam(':studentid', $studentid, PDO::PARAM_STR);
 $query-> bindParam(':password', $password, PDO::PARAM_STR);
 $query-> execute();
 $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -27,7 +22,7 @@ if($query->rowCount() > 0)
  $_SESSION['stdid']=$result->StudentId;
 if($result->Status==1)
 {
-$_SESSION['login']=$_POST['emailid'];
+$_SESSION['login']=$result->StudentId;
 echo "<script type='text/javascript'> document.location ='dashboard.php'; </script>";
 } else {
 echo "<script>alert('Your Account Has been blocked .Please contact admin');</script>";
@@ -39,7 +34,6 @@ echo "<script>alert('Your Account Has been blocked .Please contact admin');</scr
 
 else{
 echo "<script>alert('Invalid Details');</script>";
-}
 }
 }
 ?>
@@ -84,19 +78,14 @@ echo "<script>alert('Invalid Details');</script>";
 <form role="form" method="post">
 
 <div class="form-group">
-<label>Enter Email id</label>
-<input class="form-control" type="text" name="emailid" required autocomplete="off" />
+<label>Enter Student ID (SAP ID)</label>
+<input class="form-control" type="text" name="studentid" required autocomplete="off" pattern="[0-9]{9}" maxlength="9" placeholder="9-digit SAP ID" />
 </div>
 <div class="form-group">
 <label>Password</label>
 <input class="form-control" type="password" name="password" required autocomplete="off"  />
 <p class="help-block"><a href="user-forgot-password.php">Forgot Password</a></p>
 </div>
-
- <div class="form-group">
-<label>Verification code : </label>
-<input type="text" class="form-control1"  name="vercode" maxlength="5" autocomplete="off" required  style="height:25px;" />&nbsp;<img src="captcha.php">
-</div> 
 
  <button type="submit" name="login" class="btn btn-info">LOGIN </button> | <a href="signup.php">Not Register Yet</a>
 </form>

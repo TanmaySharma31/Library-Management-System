@@ -13,14 +13,14 @@ if(isset($_POST['add']))
 $bookname=$_POST['bookname'];
 $category=$_POST['category'];
 $author=$_POST['author'];
-$isbn=$_POST['isbn'];
+$bookcode=$_POST['bookcode'];
 $price=$_POST['price'];
-$sql="INSERT INTO  tblbooks(BookName,CatId,AuthorId,ISBNNumber,BookPrice) VALUES(:bookname,:category,:author,:isbn,:price)";
+$sql="INSERT INTO  tblbooks(BookName,CatId,AuthorId,BookCode,BookPrice) VALUES(:bookname,:category,:author,:bookcode,:price)";
 $query = $dbh->prepare($sql);
 $query->bindParam(':bookname',$bookname,PDO::PARAM_STR);
 $query->bindParam(':category',$category,PDO::PARAM_STR);
 $query->bindParam(':author',$author,PDO::PARAM_STR);
-$query->bindParam(':isbn',$isbn,PDO::PARAM_STR);
+$query->bindParam(':bookcode',$bookcode,PDO::PARAM_STR);
 $query->bindParam(':price',$price,PDO::PARAM_STR);
 $query->execute();
 $lastInsertId = $dbh->lastInsertId();
@@ -70,7 +70,7 @@ header('location:manage-books.php');
 
 </div>
 <div class="row">
-<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3"">
+<div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
 <div class="panel panel-info">
 <div class="panel-heading">
 Book Info
@@ -125,15 +125,15 @@ foreach($results as $result)
 </div>
 
 <div class="form-group">
-<label>ISBN Number<span style="color:red;">*</span></label>
-<input class="form-control" type="text" name="isbn"  required="required" autocomplete="off"  />
-<p class="help-block">An ISBN is an International Standard Book Number.ISBN Must be unique</p>
+<label>Book Code<span style="color:red;">*</span></label>
+<input class="form-control" type="text" name="bookcode"  required="required" autocomplete="off" placeholder="e.g., 1-001" />
+<p class="help-block">Book Code format: Category-SerialNumber (e.g., 1-001). Must be unique</p>
 </div>
 
- <div class="form-group">
- <label>Price<span style="color:red;">*</span></label>
- <input class="form-control" type="text" name="price" autocomplete="off"   required="required" />
- </div>
+<div class="form-group">
+<label>Price (in Rupees ₹)<span style="color:red;">*</span></label>
+<input class="form-control" type="text" name="price" autocomplete="off"  required="required" />
+</div>
 <button type="submit" name="add" class="btn btn-info">Add </button>
 
                                     </form>

@@ -8,12 +8,10 @@ header('location:index.php');
 }
 else{ 
 if(isset($_POST['update']))
-{    
-$sid=$_SESSION['stdid'];  
-$fname=$_POST['fullanme'];
-$mobileno=$_POST['mobileno'];
-
-$sql="update tblstudents set FullName=:fname,MobileNumber=:mobileno where StudentId=:sid";
+{ 
+$sid=$_SESSION['stdid'];
+$fname=$_POST['fullname'];
+$mobileno=$_POST['mobileno'];$sql="update tblstudents set FullName=:fname,MobileNumber=:mobileno where StudentId=:sid";
 $query = $dbh->prepare($sql);
 $query->bindParam(':sid',$sid,PDO::PARAM_STR);
 $query->bindParam(':fname',$fname,PDO::PARAM_STR);
@@ -109,8 +107,8 @@ foreach($results as $result)
 
 
 <div class="form-group">
-<label>Enter Full Name</label>
-<input class="form-control" type="text" name="fullanme" value="<?php echo htmlentities($result->FullName);?>" autocomplete="off" required />
+<label>Enter Full Name : </label>
+<input class="form-control" type="text" name="fullname" value="<?php echo htmlentities($result->FullName);?>" autocomplete="off" required />
 </div>
 
 
