@@ -1,103 +1,168 @@
-# Online-Library-Management-System-PHP
-This is a simple Online-Library-Management-System for School and colleges..
-Online library Management System divided in two modules–
+# Library Management System
 
-Student
-Admin
-Admin Features
+A comprehensive web-based library management system built with PHP and MySQL, featuring book reservations, verified reviews, and automated notifications.
 
-Admin Dashboard
-Admin can add/update/ delete category
-Admin can add/update/ delete author
-Admin can add/update/ delete books
-Admin can issue a new book to student and also update the details when student return book
-Admin can search student by using their student ID
-Admin can also view student details
-Admin can change own password
-Students-
+## Features
 
-Student can register yourself and after registration they will get studentid
-After login student can view own dashboard.
- Student can update own profile.
-Student can view issued book and book return date-time.
-Student can also change own password.
-Student can also recover own password.
-How to run this Project
-1. Download and Unzip file on your local system copy library.
-2. Put library folder inside root directory
-Database Configuration
-Open phpmyadmin
-Create Database library
-Import database library.sql (available inside zip package)
+### 👨‍💼 Admin Module
+- Complete dashboard with analytics
+- Add/Edit/Delete categories, authors, and books
+- Issue books to students with automatic tracking
+- Manage issued books and overdue fines
+- View registered students and their details
+- Search functionality for books and students
 
-For User
-Open Your browser put inside browser “http://localhost/library”
+### 👨‍🎓 Student Module
+- User registration with auto-generated Student ID
+- Personal dashboard with issued books overview
+- **Book Reservation System** with queue management
+- **Verified Review System** (only for borrowed books)
+- **Real-time Notifications** with due date reminders
+- Profile management and password recovery
+- Fine calculation and payment tracking
 
-Login Details for user :
+## Technologies Used
 
-Username : test@gmail.com
-Password : Test@123
+- **Backend**: PHP 8.2
+- **Database**: MySQL
+- **Frontend**: HTML5, CSS3, Bootstrap 4
+- **JavaScript**: jQuery, DataTables
+- **Server**: Apache (XAMPP)
 
+## Prerequisites
 
-For Admin Panel
-Open Your browser put inside browser “http://localhost/library/admin”
+Before running this project, ensure you have:
+- XAMPP (or any PHP server with MySQL)
+- PHP 8.0 or higher
+- MySQL 5.7 or higher
+- Web browser (Chrome, Firefox, Edge)
 
-Login Details for admin :
-Username : admin
-Password : admin@123
+## Installation & Setup
 
-Home Page: 
-![alt text](https://github.com/kumarpandule2000/Online-Library-Management-System-PHP/blob/master/Images/1%20Updated.png?raw=true)
+### Step 1: Clone or Download the Project
+```bash
+git clone https://github.com/TanmaySharma31/Library-Management-System.git
+```
+Or download and extract the ZIP file.
 
-Online library Management System divided in two modules–
+### Step 2: Setup XAMPP
+1. Download and install [XAMPP](https://www.apachefriends.org/)
+2. Start **Apache** and **MySQL** from XAMPP Control Panel
 
-Student
-Admin
+### Step 3: Database Configuration
+1. Open your browser and go to `http://localhost/phpmyadmin`
+2. Create a new database named `library`
+3. Import the SQL file:
+   - Click on the `library` database
+   - Go to **Import** tab
+   - Choose file: `sql file/library.sql`
+   - Click **Go**
 
+### Step 4: Configure Database Connection
+Open `library/includes/config.php` and verify the database credentials:
+```php
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASS', 'Qwerty9611');  // Update if your MySQL password is different
+define('DB_NAME', 'library');
+```
 
+### Step 5: Copy Project to Server Directory
+- Copy the entire project folder to `C:\xampp\htdocs\`
+- Or rename the `library` folder and place it there
 
-Admin Features
+## Running the Application
 
+### Method 1: Using XAMPP (Recommended)
+1. Ensure Apache and MySQL are running in XAMPP
+2. Open browser and navigate to:
+   - **Student Portal**: `http://localhost/library`
+   - **Admin Panel**: `http://localhost/library/admin`
 
+### Method 2: Using PHP Built-in Server
+1. Open terminal/command prompt
+2. Navigate to the library folder:
+   ```bash
+   cd path/to/LibManagementSys(DBMS)/library
+   ```
+3. Start the server:
+   ```bash
+   php -S localhost:8000
+   ```
+4. Access at `http://localhost:8000`
 
-Admin Dashboard
+## Login Credentials
 
-Admin can add/update/ delete category
+### Student Account
+- **Email**: test@gmail.com
+- **Password**: Test@123
 
-Admin can add/update/ delete author
+### Admin Account
+- **Username**: admin
+- **Password**: admin@123
 
-Admin can add/update/ delete books
+## Key Functionalities
 
-Admin can issue a new book to student and also update the details when student return book
+### 📚 Book Reservation System
+- Students can reserve currently issued books
+- Queue-based system with position tracking
+- Automatic notifications when books become available
 
-Admin can search student by using their student ID
+### ⭐ Verified Review System
+- Only students who have borrowed a book can review it
+- Prevents fake reviews
+- Rating system with detailed review text
 
-Admin can also view student details
+### 🔔 Notification System
+- Real-time notifications for due dates
+- Visual notification bell with unread count
+- Automated reminders for book returns
 
-Admin can change own password
+### 💰 Fine Management
+- Automatic fine calculation for overdue books
+- Fine payment tracking
+- Admin dashboard for fine overview
 
+## Project Structure
+```
+LibManagementSys(DBMS)/
+├── library/
+│   ├── admin/              # Admin panel files
+│   ├── assets/             # CSS, JS, images
+│   ├── includes/           # Config and common files
+│   ├── index.php           # Student login
+│   ├── signup.php          # Student registration
+│   ├── dashboard.php       # Student dashboard
+│   └── ...                 # Other student modules
+├── sql file/
+│   └── library.sql         # Database schema
+└── README.md
+```
 
-Admin Dashboard:
-![alt text](https://github.com/kumarpandule2000/Online-Library-Management-System-PHP/blob/master/Images/3%20Updated.png?raw=true)
+## Troubleshooting
 
+### Database Connection Error
+- Verify MySQL is running in XAMPP
+- Check database credentials in `includes/config.php`
+- Ensure `library` database exists and SQL is imported
 
-Students-
+### Page Not Found (404)
+- Verify the correct folder path in `htdocs`
+- Check if Apache is running
+- Clear browser cache
 
+### Notification Bell Not Visible
+- Clear browser cache and refresh
+- Ensure CSS files are loading properly
 
+## Contributing
 
-Student can register yourself and after registration they will get studentid
+Feel free to fork this project and submit pull requests for improvements.
 
-After login student can view own dashboard.
+## License
 
-Student can update own profile.
+This project is open-source and available under the MIT License.
 
-Student can view issued book and book return date-time.
+## Contact
 
-Student can also change own password.
-
-Student can also recover own password.
-
-
-Student Dashboard:
-![alt text](https://github.com/kumarpandule2000/Online-Library-Management-System-PHP/blob/master/Images/2.png?raw=true)
-
+For any queries or issues, please open an issue on GitHub.
